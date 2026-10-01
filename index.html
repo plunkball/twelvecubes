@@ -2,20 +2,35 @@
 <html lang="en">
 <head>
 
-<script id="plunk-v123-boot">
-(() => {
-  let fresh=false;
-  try{
-    const pending=localStorage.getItem('plunk_firstLaunchPending')==='true';
-    const hasSave=Object.keys(localStorage).some(k=>k.startsWith('plunk_')&&!['plunk_firstLaunchPending','plunk_firstLaunchDraft','plunk_clientIdentity','plunk_firstLaunchComplete'].includes(k));
-    fresh=localStorage.getItem('plunk_firstLaunchComplete')===null&&(pending||!hasSave);
-    if(fresh)localStorage.setItem('plunk_firstLaunchPending','true');
-  }catch(e){fresh=false;}
-  window.__plunkFirstRun=fresh;
-  if(fresh)document.documentElement.setAttribute('data-plunk-onboarding','');
-})();
-</script>
-<style>html[data-plunk-onboarding],html[data-plunk-onboarding] body{background:#fff!important;color:#111!important}html[data-plunk-onboarding] body>#app,html[data-plunk-onboarding] body>#plunkWinnerReveal,html[data-plunk-onboarding] body>canvas{visibility:hidden!important}</style>
+<style id="plunk-v125-gate-css">
+#plunkPasswordGate{position:fixed!important;inset:0!important;z-index:2147483647!important;background:#fff!important;color:#111!important;display:block!important;visibility:visible!important;overflow:auto;font:16px Arial,sans-serif}
+#plunkPasswordGate[hidden],#plunkFirstLaunch[hidden],#plunkFirstLaunch section[hidden]{display:none!important}
+#plunkPasswordGate form{width:min(420px,calc(100% - 32px));margin:64px auto}
+#plunkPasswordGate h1{font:700 24px Arial,sans-serif;color:#111}
+#plunkPasswordGate label{display:block;margin:10px 0 5px}
+#plunkPasswordGate input,#plunkPasswordGate button{font:16px Arial,sans-serif;padding:8px;color:#111;background:#fff;border:1px solid #555;border-radius:0}
+#plunkPasswordGate input{width:100%}#plunkPasswordGate button{margin-top:12px;cursor:pointer}
+#plunkPasswordGate p{color:#b00;min-height:22px}
+#plunkFirstLaunch{position:fixed;inset:0;z-index:2147483646;background:#100b08;color:#f0e6da;font:15px/1.4 'Segoe UI',Arial,sans-serif;overflow:auto}
+#plunkFirstLaunch .inner{width:min(620px,calc(100% - 28px));margin:40px auto;padding:23px;border:2px solid #80512e;border-radius:7px;background:#20150d}
+#plunkFirstLaunch *{box-sizing:border-box}
+#plunkFirstLaunch h1{font-size:27px;color:#ffe0a0;margin:0 0 12px}
+#plunkFirstLaunch label{display:block;margin:10px 0 4px}
+#plunkFirstLaunch input,#plunkFirstLaunch select,#plunkFirstLaunch button{font:15px 'Segoe UI',Arial,sans-serif;background:#130e0a;color:#f6e6ce;border:1px solid #956a3a;border-radius:4px;padding:7px}
+#plunkFirstLaunch input:not([type=color]),#plunkFirstLaunch select{width:100%}
+#plunkFirstLaunch input[type=color]{width:80px;height:36px;padding:2px}
+#plunkFirstLaunch button{cursor:pointer;margin:9px 6px 5px 0;background:#503017}
+#plunkFirstLaunch button:disabled{opacity:.5;cursor:default}
+#plunkFirstLaunch .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 12px}
+#plunkFirstLaunch .avatar{display:block;width:180px;height:180px;background:#130c07;border:1px solid #ad834f;border-radius:6px;margin:12px auto}
+#plunkFirstLaunch .crate{border:1px solid #86552e;padding:10px;margin:10px 0}
+#plunkFirstLaunch .reel{height:77px;overflow:hidden;position:relative;border:1px solid #86552e;background:#100b08;margin:8px 0}
+#plunkFirstLaunch .reel:after{content:'';position:absolute;left:50%;top:0;bottom:0;border-left:2px solid #ffd075}
+#plunkFirstLaunch .strip{display:flex;gap:6px;width:max-content;padding:6px 8px;will-change:transform}
+#plunkFirstLaunch .tile{flex:0 0 98px;width:98px;height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#25180f;border:1px solid #7f5932;font-size:10px}
+#plunkFirstLaunch .step-enter{animation:plunkStepIn .3s ease both}@keyframes plunkStepIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media(max-width:560px){#plunkFirstLaunch .grid{grid-template-columns:1fr}#plunkFirstLaunch .inner{margin:12px auto;padding:14px}}
+</style>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -1952,43 +1967,47 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
 </head>
 <body>
 
-<style id="plunk-v123-onboarding-style">
-#plunkFirstLaunch{position:fixed;inset:0;z-index:2147483647;visibility:visible!important;background:#100b08;color:#f0e6da;font:15px/1.4 'Segoe UI',Arial,sans-serif;overflow:auto}
-#plunkFirstLaunch[hidden],#plunkFirstLaunch section[hidden]{display:none!important}
-#plunkFirstLaunch *{box-sizing:border-box}
-#plunkFirstLaunch .inner{width:min(620px,calc(100% - 28px));margin:42px auto;padding:23px;border:2px solid #80512e;border-radius:7px;background:#20150d;box-shadow:0 15px 50px #0009}
-#plunkFirstLaunch h1{font:900 27px 'Segoe UI',Arial,sans-serif;margin:0 0 13px;color:#ffe0a0}
-#plunkFirstLaunch p{margin:8px 0;color:#d5c5b0}
-#plunkFirstLaunch label{display:block;margin:11px 0 4px;font-weight:700}
-#plunkFirstLaunch input,#plunkFirstLaunch select,#plunkFirstLaunch button{font:15px 'Segoe UI',Arial,sans-serif;padding:7px 9px;min-height:34px;border:1px solid #956a3a;border-radius:4px;background:#130e0a;color:#f6e6ce}
-#plunkFirstLaunch input:not([type=color]),#plunkFirstLaunch select{width:100%}
-#plunkFirstLaunch input[type=color]{width:80px;min-height:36px;padding:2px}
-#plunkFirstLaunch button{cursor:pointer;margin:8px 7px 5px 0;background:#503017;font-weight:800}
-#plunkFirstLaunch button:disabled{opacity:.55;cursor:default}
-#plunkFirstLaunch .error{color:#ff9c88;min-height:20px}
-#plunkFirstLaunch .avatar-canvas{display:block;width:180px;height:180px;margin:6px auto 14px;background:#140d08;border:1px solid #a47442;border-radius:8px}
-#plunkFirstLaunch .edit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px}
-#plunkFirstLaunch .crate{border:1px solid #86552e;border-radius:5px;padding:10px;margin:10px 0;background:#180f09}
-#plunkFirstLaunch .crate-reel{height:79px;overflow:hidden;position:relative;border:1px solid #876037;background:#0e0907;white-space:nowrap;margin:8px 0}
-#plunkFirstLaunch .crate-reel:after{content:'';position:absolute;left:50%;top:0;bottom:0;border-left:2px solid #ffcb72;z-index:2}
-#plunkFirstLaunch .crate-strip{display:flex;width:max-content;gap:6px;padding:7px 8px;will-change:transform}
-#plunkFirstLaunch .crate-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;width:98px;height:62px;flex:0 0 98px;border:1px solid #7d5532;border-radius:4px;background:#24170e;font-size:10px;text-align:center;white-space:normal}
-#plunkFirstLaunch .step-enter{animation:plunkOnEnter .28s ease both}
-@keyframes plunkOnEnter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-#plunkFirstLaunch[data-step=password]{background:#fff;color:#111;font:16px Arial,sans-serif}
-#plunkFirstLaunch[data-step=password] .inner{width:min(420px,calc(100% - 32px));margin:58px auto;padding:0;border:0;border-radius:0;background:#fff;box-shadow:none}
-#plunkFirstLaunch[data-step=password] h1,#plunkFirstLaunch[data-step=password] p{color:#111;font:inherit}
-#plunkFirstLaunch[data-step=password] h1{font-size:24px;font-weight:700}
-#plunkFirstLaunch[data-step=password] input,#plunkFirstLaunch[data-step=password] button{background:#fff;color:#111;border:1px solid #555;border-radius:0;font:16px Arial,sans-serif}
-#plunkFirstLaunch[data-step=password] .error{color:#b00}
-@media(max-width:560px){#plunkFirstLaunch .edit-grid{grid-template-columns:1fr}#plunkFirstLaunch .inner{margin:12px auto;padding:14px}}
-</style>
+<div id="plunkPasswordGate" role="dialog" aria-modal="true"><form id="plunkGateForm"><h1>Password</h1><label for="plunkGateInput">Password</label><input id="plunkGateInput" type="password" autocomplete="off" required><button type="submit">Submit</button><p id="plunkGateError" role="alert"></p></form></div>
 <div id="plunkFirstLaunch" hidden role="dialog" aria-modal="true"><div class="inner">
-<section data-step="password"><h1>Password</h1><form id="plunkPasswordForm"><label for="plunkPass">Password</label><input id="plunkPass" type="password" autocomplete="off" required><button type="submit">Submit</button><p class="error" id="plunkPassError" role="alert"></p></form></section>
-<section data-step="username" hidden><h1>Type Username</h1><form id="plunkNameForm"><label for="plunkName">Username</label><input id="plunkName" maxlength="14" required><button type="submit">Continue</button><p class="error" id="plunkNameError" role="alert"></p></form></section>
-<section data-step="avatar" hidden><h1>Make Avatar</h1><p>Make your player, then continue.</p><canvas id="plunkAvatarCanvas" class="avatar-canvas" width="240" height="240"></canvas><button id="plunkRandomAvatar" type="button">Randomize</button><div class="edit-grid"><div><label for="plunkPrimary">Primary</label><input id="plunkPrimary" type="color" value="#4b89dc"></div><div><label for="plunkSecondary">Secondary</label><input id="plunkSecondary" type="color" value="#ffc46b"></div><div><label for="plunkEyes">Eyes</label><select id="plunkEyes"></select></div><div><label for="plunkMouth">Mouth</label><select id="plunkMouth"></select></div><div><label for="plunkBrows">Brows</label><select id="plunkBrows"></select></div><div><label for="plunkOutline">Outline</label><select id="plunkOutline"></select></div><div><label for="plunkGradient">Gradient</label><select id="plunkGradient"><option value="none">No Gradient</option><option value="radial-in">Gradient In</option><option value="radial-out">Gradient Out</option><option value="spiral">Spiral Gradient</option><option value="linear">Linear Gradient</option><option value="split">Split Gradient</option></select></div></div><button id="plunkAvatarNext" type="button">Continue</button></section>
-<section data-step="crates" hidden><h1>Super Crates</h1><p>Open one of each: Dash Effects, Trail, and Hit Effect.</p><div id="plunkSuperCrates"></div><button id="plunkStartGame" type="button" disabled>Start Game</button></section>
+<section data-step="username"><h1>Type Username</h1><form id="plunkNameForm"><label for="plunkName">Username</label><input id="plunkName" maxlength="14" required><button type="submit">Continue</button></form></section>
+<section data-step="avatar" hidden><h1>Make Avatar</h1><p>Randomize or choose your look.</p><canvas id="plunkAvatarCanvas" class="avatar" width="240" height="240"></canvas><button id="plunkRandomAvatar" type="button">Randomize</button><div class="grid"><div><label for="plunkPrimary">Primary</label><input id="plunkPrimary" type="color" value="#4b89dc"></div><div><label for="plunkSecondary">Secondary</label><input id="plunkSecondary" type="color" value="#ffc46b"></div><div><label for="plunkEyes">Eyes</label><select id="plunkEyes"></select></div><div><label for="plunkMouth">Mouth</label><select id="plunkMouth"></select></div><div><label for="plunkBrows">Brows</label><select id="plunkBrows"></select></div><div><label for="plunkOutline">Outline</label><select id="plunkOutline"></select></div><div><label for="plunkGradient">Gradient</label><select id="plunkGradient"><option value="none">No Gradient</option><option value="radial-in">Gradient In</option><option value="radial-out">Gradient Out</option><option value="spiral">Spiral</option><option value="linear">Linear</option><option value="split">Split</option></select></div></div><button id="plunkAvatarNext" type="button">Continue</button></section>
+<section data-step="crates" hidden><h1>Super Crates</h1><p>Open one Dash, one Trail and one Hit Effect Super Crate.</p><div id="plunkSuperCrates"></div><button id="plunkStartGame" type="button" disabled>Start Game</button></section>
 </div></div>
+
+
+<script id="plunk-v125-password-early-handler">
+(() => {
+  const form=document.getElementById('plunkGateForm'),gate=document.getElementById('plunkPasswordGate');
+  if(!form||!gate)return;
+  let fresh=false;
+  try{
+    const pending=localStorage.getItem('plunk_firstLaunchPending')==='true';
+    const hasSave=Object.keys(localStorage).some(k=>k.startsWith('plunk_')&&
+      !['plunk_firstLaunchPending','plunk_firstLaunchDraft','plunk_clientIdentity','plunk_firstLaunchComplete'].includes(k));
+    fresh=localStorage.getItem('plunk_firstLaunchComplete')===null&&(pending||!hasSave);
+    if(fresh)localStorage.setItem('plunk_firstLaunchPending','true');
+  }catch(e){fresh=false;}
+  window.__plunkNewUser=fresh;
+  form.addEventListener('submit',event=>{
+    event.preventDefault();event.stopImmediatePropagation();
+    const input=document.getElementById('plunkGateInput');
+    if(input.value!=='cheeseburger'){
+      document.getElementById('plunkGateError').textContent='Incorrect password.';
+      input.value='';input.focus();return;
+    }
+    input.value='';gate.hidden=true;
+    if(window.__plunkNewUser){
+      const wizard=document.getElementById('plunkFirstLaunch');wizard.hidden=false;
+      window.__plunkWizardPendingOpen=true;
+      if(typeof window.__plunkOpenWizard==='function')window.__plunkOpenWizard();
+    }else{
+      document.getElementById('plunkFirstLaunch')?.remove();
+      if(typeof UI!=='undefined'&&typeof Game!=='undefined'&&Game.state==='menu')UI.goto('main');
+    }
+  },true);
+  document.getElementById('plunkGateInput').focus();
+})();
+</script>
 
 <div id="app">
 <canvas id="gameCanvas"></canvas>

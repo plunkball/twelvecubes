@@ -1,10 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+<script id="plunk-v121-first-launch-bootstrap">
+window.__plunkFreshInstall=false;
+try{
+  window.__plunkFreshInstall=localStorage.getItem('plunk_firstLaunchComplete')===null &&
+    !Object.keys(localStorage).some(k=>k.startsWith('plunk_') && k!=='plunk_firstLaunchComplete');
+}catch(e){window.__plunkFreshInstall=false;}
+if(window.__plunkFreshInstall){const style=document.createElement('style');style.id='plunk-first-launch-early-hide';style.textContent='body>*:not(#plunkFirstLaunch){visibility:hidden!important}';document.head.appendChild(style);}
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="icon" type="image/png" href="icon.png">
-<title>plunk</title>
+<title>|</title>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
 :root{
@@ -1950,7 +1960,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button><button class="btn small" type="button" data-sphere-quick="hit">HIT EFFECTS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 3.02 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 3.00 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -20801,7 +20811,35 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
 </script>
 
 
-<script id="plunk-v120-gyroblade-base-range">
+<style id="plunk-v121-first-launch-style">
+#plunkFirstLaunch{position:fixed;inset:0;z-index:2147483647;background:#fff;color:#111;font:16px/1.4 Arial,sans-serif;overflow:auto}
+#plunkFirstLaunch[hidden]{display:none!important}
+#plunkFirstLaunch *{box-sizing:border-box}
+#plunkFirstLaunch .plunk-start-inner{width:min(480px,calc(100% - 32px));margin:60px auto;padding:0}
+#plunkFirstLaunch h1{font:bold 24px Arial,sans-serif;margin:0 0 18px;color:#111}
+#plunkFirstLaunch p{margin:8px 0;color:#111}
+#plunkFirstLaunch label{display:block;margin:12px 0 5px}
+#plunkFirstLaunch input,#plunkFirstLaunch button{font:16px Arial,sans-serif;padding:7px 9px;color:#111;background:#fff;border:1px solid #555;border-radius:0}
+#plunkFirstLaunch input{width:100%}
+#plunkFirstLaunch button{cursor:pointer;margin:7px 7px 7px 0}
+#plunkFirstLaunch button:disabled{color:#777;cursor:default}
+#plunkFirstLaunch .plunk-start-step[hidden]{display:none!important}
+#plunkFirstLaunch .plunk-start-error{color:#a00;min-height:22px}
+#plunkFirstLaunch .plunk-start-avatar{display:block;width:94px;height:94px;border:2px solid #222;border-radius:50%;margin:14px auto 22px}
+#plunkFirstLaunch .plunk-start-crates{display:grid;gap:8px;margin:12px 0}
+#plunkFirstLaunch .plunk-start-crate{border:1px solid #777;padding:9px}
+</style>
+<div id="plunkFirstLaunch" hidden aria-modal="true" role="dialog">
+  <div class="plunk-start-inner">
+    <section class="plunk-start-step" data-step="password"><h1>Password</h1><form id="plunkStartPasswordForm"><label for="plunkStartPassword">Password</label><input id="plunkStartPassword" type="password" autocomplete="off" required><button type="submit">Submit</button><p class="plunk-start-error" id="plunkStartPasswordError" role="alert"></p></form></section>
+    <section class="plunk-start-step" data-step="username" hidden><h1>Type Username</h1><form id="plunkStartUsernameForm"><label for="plunkStartUsername">Username</label><input id="plunkStartUsername" maxlength="14" required><button type="submit">Continue</button><p class="plunk-start-error" id="plunkStartUsernameError" role="alert"></p></form></section>
+    <section class="plunk-start-step" data-step="avatar" hidden><h1>Make Avatar</h1><p>Randomize your appearance, or set colors below.</p><div class="plunk-start-avatar" id="plunkStartAvatarPreview"></div><button id="plunkStartRandom" type="button">Randomize</button><label for="plunkStartPrimary">Primary color</label><input type="color" id="plunkStartPrimary" value="#4b89dc"><label for="plunkStartSecondary">Secondary color</label><input type="color" id="plunkStartSecondary" value="#ffc46b"><button id="plunkStartAvatarNext" type="button">Continue</button></section>
+    <section class="plunk-start-step" data-step="crates" hidden><h1>Super Crates</h1><p>Open one Dash, one Trail, and one Hit Effect Super Crate.</p><p>Odds per crate: Rare 1/2, Epic 1/3, Legendary 1/9, Mythic 1/20; remaining chance Uncommon.</p><div class="plunk-start-crates" id="plunkStartCrates"></div><button id="plunkStartFinish" type="button" disabled>Start Game</button></section>
+  </div>
+</div>
+
+
+<script id="plunk-v121-gyro-range">
 (() => {
   'use strict';
   if(typeof Game==='undefined')return;
@@ -26090,10 +26128,10 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
     const total=Number(data?.total)||0;
     const title=document.getElementById('weaponRogueTitle');
     if(title){
-      const displayedRound=Math.max(1,(Number(data?.round)||1)-1);
+      const shownRound=Math.max(1,(Number(data?.round)||1)-1);
       title.textContent=setCount>1
-        ? `ROUND ${displayedRound} UPGRADE · SET ${setIndex+1}/${setCount}`
-        : `ROUND ${displayedRound} UPGRADE`;
+        ? `ROUND ${shownRound} UPGRADE · SET ${setIndex+1}/${setCount}`
+        : `ROUND ${shownRound} UPGRADE`;
     }
     const sub=document.getElementById('weaponRogueSub');
     if(sub){
@@ -26848,23 +26886,6 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
       ctx.restore();
     }
     ctx.restore();return result;
-  };
-})();
-</script>
-
-
-<script id="plunk-v120-gyroblade-base-range">
-(() => {
-  'use strict';
-  if(typeof Game==='undefined')return;
-  const prior=Game.weaponSpec?.bind(Game);
-  if(!prior)return;
-  Game.weaponSpec=function(p){
-    const spec=prior(p);
-    const id=typeof validWeapon==='function'?validWeapon(p?.weapon||'sword'):p?.weapon;
-    if(id==='gyroblade'&&spec&&Number.isFinite(Number(spec.projectileRange)))
-      spec.projectileRange=Math.max(0,Number(spec.projectileRange)*0.75);
-    return spec;
   };
 })();
 </script>

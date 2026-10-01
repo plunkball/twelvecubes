@@ -1969,7 +1969,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
 
 <div id="plunkPasswordGate" role="dialog" aria-modal="true"><form id="plunkGateForm"><h1>Password</h1><label for="plunkGateInput">Password</label><input id="plunkGateInput" type="password" autocomplete="off" required><button type="submit">Submit</button><p id="plunkGateError" role="alert"></p></form></div>
 <div id="plunkFirstLaunch" hidden role="dialog" aria-modal="true"><div class="inner">
-<section data-step="username"><h1>Type Username</h1><form id="plunkNameForm"><label for="plunkName">Username</label><input id="plunkName" maxlength="14" required><button type="submit">Continue</button></form></section>
+<section data-step="username"><h1>Type Username</h1><form id="plunkNameForm" onsubmit="event.preventDefault();return false;"><label for="plunkName">Username</label><input id="plunkName" maxlength="14" required><button type="submit">Continue</button></form></section>
 <section data-step="avatar" hidden><h1>Make Avatar</h1><p>Randomize or choose your look.</p><canvas id="plunkAvatarCanvas" class="avatar" width="240" height="240"></canvas><button id="plunkRandomAvatar" type="button">Randomize</button><div class="grid"><div><label for="plunkPrimary">Primary</label><input id="plunkPrimary" type="color" value="#4b89dc"></div><div><label for="plunkSecondary">Secondary</label><input id="plunkSecondary" type="color" value="#ffc46b"></div><div><label for="plunkEyes">Eyes</label><select id="plunkEyes"></select></div><div><label for="plunkMouth">Mouth</label><select id="plunkMouth"></select></div><div><label for="plunkBrows">Brows</label><select id="plunkBrows"></select></div><div><label for="plunkOutline">Outline</label><select id="plunkOutline"></select></div><div><label for="plunkGradient">Gradient</label><select id="plunkGradient"><option value="none">No Gradient</option><option value="radial-in">Gradient In</option><option value="radial-out">Gradient Out</option><option value="spiral">Spiral</option><option value="linear">Linear</option><option value="split">Split</option></select></div></div><button id="plunkAvatarNext" type="button">Continue</button></section>
 <section data-step="crates" hidden><h1>Super Crates</h1><p>Open one Dash, one Trail and one Hit Effect Super Crate.</p><div id="plunkSuperCrates"></div><button id="plunkStartGame" type="button" disabled>Start Game</button></section>
 </div></div>
@@ -2004,6 +2004,19 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
       document.getElementById('plunkFirstLaunch')?.remove();
       if(typeof UI!=='undefined'&&typeof Game!=='undefined'&&Game.state==='menu')UI.goto('main');
     }
+  },true);
+  document.getElementById('plunkNameForm').addEventListener('submit',event=>{
+    event.preventDefault();event.stopImmediatePropagation();
+    const name=String(document.getElementById('plunkName').value||'').trim().slice(0,14);
+    if(!name)return false;
+    window.__plunkWizardName=name;
+    if(typeof window.__plunkWizardAdvanceName==='function')window.__plunkWizardAdvanceName(name);
+    else{
+      const wizard=document.getElementById('plunkFirstLaunch');
+      wizard.querySelector('[data-step=username]').hidden=true;
+      wizard.querySelector('[data-step=avatar]').hidden=false;
+    }
+    return false;
   },true);
   document.getElementById('plunkGateInput').focus();
 })();
@@ -20871,6 +20884,39 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
     }
     ctx.restore();return result;
   };
+})();
+</script>
+
+
+<script id="plunk-v126-first-launch-wizard-runtime">
+(() => {
+  'use strict';
+  const root=document.getElementById('plunkFirstLaunch');if(!root)return;
+  const $=id=>document.getElementById(id),copy=o=>JSON.parse(JSON.stringify(o));
+  const draft=Storage.get('firstLaunchDraft',{});
+  const state={name:'',cust:draft.cust||null,opened:{dash:!!draft.opened?.dash,trail:!!draft.opened?.trail,hit:!!draft.opened?.hit},busy:false};
+  const hex=(h,s,v)=>{const f=n=>{const k=(n+h/60)%6;return Math.round(v/100*(1-s/100*Math.max(0,Math.min(k,4-k,1)))*255).toString(16).padStart(2,'0')};return '#'+f(5)+f(3)+f(1)};
+  const hsv=x=>{const r=parseInt(x.slice(1,3),16)/255,g=parseInt(x.slice(3,5),16)/255,b=parseInt(x.slice(5,7),16)/255,max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;let h=0;if(d){if(max===r)h=((g-b)/d)%6;else if(max===g)h=(b-r)/d+2;else h=(r-g)/d+4;h=(h*60+360)%360}return {hue:Math.round(h),saturation:Math.round(max?d/max*100:0),brightness:Math.round(max*100)}};
+  const defaults=()=>({name:state.name,hue:200,hue2:40,saturation:80,saturation2:60,brightness:60,brightness2:60,gradientPattern:'radial-out',eyes:'classic',mouth:'smile',brows:'none',outline:'none',dashEffect:'basic',trailEffect:'none',hitEffect:'impactSpark'});
+  const parts={eyes:'plunkEyes',mouth:'plunkMouth',brows:'plunkBrows',outline:'plunkOutline'};
+  for(const [kind,id] of Object.entries(parts))for(const [value,name] of FACE_OPTIONS[kind]||[]){const option=document.createElement('option');option.value=value;option.textContent=name;$(id).appendChild(option)}
+  const show=step=>{root.querySelectorAll('section[data-step]').forEach(el=>{el.hidden=el.dataset.step!==step;el.classList.remove('step-enter');if(!el.hidden){void el.offsetWidth;el.classList.add('step-enter')}});root.querySelector(`section[data-step="${step}"] input`)?.focus()};
+  window.__plunkOpenWizard=()=>{if(window.__plunkWizardPendingOpen){window.__plunkWizardPendingOpen=false;root.hidden=false;show('username')}};
+  const sync=()=>{const c=state.cust;if(!c)return;const a=hsv($('plunkPrimary').value),b=hsv($('plunkSecondary').value);Object.assign(c,a,{hue2:b.hue,saturation2:b.saturation,brightness2:b.brightness,gradientPattern:$('plunkGradient').value});for(const [kind,id] of Object.entries(parts))c[kind]=$(id).value};
+  const preview=()=>{if(!state.cust)return;sync();const canvas=$('plunkAvatarCanvas'),ctx=canvas.getContext('2d');ctx.fillStyle='#130c07';ctx.fillRect(0,0,canvas.width,canvas.height);const c=state.cust,p={id:'first-run-preview',x:120,y:120,radius:70,heavy:false,facing:1,hitFlash:0,team:null,cust:c};try{const sprite=Game.getCharacterSprite(p,c,70);ctx.drawImage(sprite.canvas,120-sprite.size/2,120-sprite.size/2)}catch(e){ctx.fillStyle=hex(c.hue,c.saturation,c.brightness);ctx.beginPath();ctx.arc(120,120,65,0,Math.PI*2);ctx.fill()}};
+  window.__plunkWizardAdvanceName=name=>{if(!window.__plunkNewUser)return;state.name=name;state.cust=state.cust||defaults();state.cust.name=name;const c=state.cust;$('plunkPrimary').value=hex(c.hue,c.saturation,c.brightness);$('plunkSecondary').value=hex(c.hue2,c.saturation2,c.brightness2);$('plunkGradient').value=c.gradientPattern||'radial-out';for(const [kind,id] of Object.entries(parts))$(id).value=c[kind]||({eyes:'classic',mouth:'smile',brows:'none',outline:'none'}[kind]);show('avatar');preview()};
+  if(window.__plunkWizardName)window.__plunkWizardAdvanceName(window.__plunkWizardName);
+  for(const id of ['plunkPrimary','plunkSecondary','plunkEyes','plunkMouth','plunkBrows','plunkOutline','plunkGradient'])$(id).addEventListener('input',preview);
+  $('plunkRandomAvatar').addEventListener('click',()=>{const c=state.cust;c.hue=Math.floor(Math.random()*360);c.hue2=Math.floor(Math.random()*360);c.saturation=50+Math.floor(Math.random()*51);c.saturation2=50+Math.floor(Math.random()*51);c.brightness=45+Math.floor(Math.random()*41);c.brightness2=45+Math.floor(Math.random()*41);for(const [kind,id] of Object.entries(parts)){const options=FACE_OPTIONS[kind];c[kind]=options[Math.floor(Math.random()*options.length)][0];$(id).value=c[kind]}c.gradientPattern=['none','radial-in','radial-out','spiral','linear','split'][Math.floor(Math.random()*6)];$('plunkPrimary').value=hex(c.hue,c.saturation,c.brightness);$('plunkSecondary').value=hex(c.hue2,c.saturation2,c.brightness2);$('plunkGradient').value=c.gradientPattern;preview()});
+  $('plunkAvatarNext').addEventListener('click',()=>{if(!state.cust)return;sync();Storage.set('firstLaunchDraft',{cust:state.cust,opened:state.opened});show('crates');buildCrates()});
+  const probs=[['rare',.5],['epic',1/3],['legendary',1/9],['mythic',.05]];
+  const roll=()=>{let r=Math.random();for(const [rarity,chance] of probs){r-=chance;if(r<0)return rarity}return 'uncommon'};
+  const catalogs={dash:SphereBoxes.effects,trail:SphereBoxes.trailEffects,hit:SphereBoxes.hitEffects};
+  function buildCrates(){const host=$('plunkSuperCrates');host.replaceChildren();for(const [kind,title] of [['dash','Dash Effects'],['trail','Trail'],['hit','Hit Effect']]){
+    const row=document.createElement('div');row.className='crate';const label=document.createElement('strong');label.textContent=title+' Super Crate';const button=document.createElement('button');button.type='button';button.textContent='Open';button.disabled=state.opened[kind];const reel=document.createElement('div');reel.className='reel';const strip=document.createElement('div');strip.className='strip';reel.appendChild(strip);const result=document.createElement('p');if(state.opened[kind])result.textContent='Already opened';
+    button.addEventListener('click',()=>{if(state.opened[kind]||state.busy)return;const rarity=roll(),pool=Object.entries(catalogs[kind]||{}).filter(([id,e])=>id!=='none'&&e?.rarity===rarity);if(!pool.length){result.textContent='Please retry.';return}const [id,effect]=pool[Math.floor(Math.random()*pool.length)],display=Object.entries(catalogs[kind]).filter(([key,e])=>key!=='none'&&e&&['uncommon','rare','epic','legendary','mythic'].includes(e.rarity));state.busy=true;button.disabled=true;strip.replaceChildren();const target=27+Math.floor(Math.random()*5);for(let i=0;i<42;i++){const [itemId,itemEffect]=i===target?[id,effect]:display[Math.floor(Math.random()*display.length)];const tile=document.createElement('div');tile.className='tile';const icon=document.createElement('span');icon.innerHTML=typeof sphereRollIconHtml==='function'?sphereRollIconHtml(Object.assign({id:itemId},itemEffect)):'✦';const text=document.createElement('span');text.textContent=itemEffect.name;tile.append(icon,text);strip.appendChild(tile)}strip.style.transition='none';strip.style.transform='translateX(0px)';requestAnimationFrame(()=>requestAnimationFrame(()=>{strip.style.transition='transform 3.7s cubic-bezier(.075,.82,.17,1)';strip.style.transform=`translateX(${(reel.clientWidth||420)/2-(8+target*104+49)}px)`}));setTimeout(()=>{state.busy=false;state.opened[kind]=true;SphereBoxes.addEffect(id);if(kind==='dash'){state.cust.dashEffect=id;SphereBoxes.equip(id)}else if(kind==='trail'){state.cust.trailEffect=id;SphereBoxes.equipTrail(id)}else{state.cust.hitEffect=id;SphereBoxes.equipHit(id)}button.disabled=true;result.textContent=rarity.toUpperCase()+': '+effect.name;Storage.set('firstLaunchDraft',{cust:state.cust,opened:state.opened});$('plunkStartGame').disabled=!Object.values(state.opened).every(Boolean)},3900)});row.append(label,document.createElement('br'),button,reel,result);}}
+  $('plunkStartGame').addEventListener('click',()=>{if(state.busy||!state.cust||!Object.values(state.opened).every(Boolean))return;Storage.set('customization',state.cust);Storage.set('customizationSlots',[copy(state.cust),null,null]);Storage.set('activeCustomizationSlot',0);Game.myName=state.name;const field=$('custName');if(field)field.value=state.name;const me=Game.players?.[Game.myId];if(me){me.name=state.name;me.cust=copy(state.cust)}Game.characterSpriteCache?.clear();Storage.set('firstLaunchComplete',true);try{localStorage.removeItem('plunk_firstLaunchPending');localStorage.removeItem('plunk_firstLaunchDraft')}catch(e){}root.remove();if(Game.state==='menu')UI.goto('main')});
+  window.__plunkOpenWizard();
 })();
 </script>
 

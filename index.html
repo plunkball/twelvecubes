@@ -2,19 +2,30 @@
 <html lang="en">
 <head>
 
-<script id="plunk-v121-first-launch-bootstrap">
-window.__plunkFreshInstall=false;
-try{
-  window.__plunkFreshInstall=localStorage.getItem('plunk_firstLaunchComplete')===null &&
-    !Object.keys(localStorage).some(k=>k.startsWith('plunk_') && k!=='plunk_firstLaunchComplete');
-}catch(e){window.__plunkFreshInstall=false;}
-if(window.__plunkFreshInstall){const style=document.createElement('style');style.id='plunk-first-launch-early-hide';style.textContent='body>*:not(#plunkFirstLaunch){visibility:hidden!important}';document.head.appendChild(style);}
+<script id="plunk-v122-first-run-bootstrap">
+(() => {
+  let fresh=false;
+  try{
+    const pending=localStorage.getItem('plunk_firstLaunchPending')==='true';
+    const hasSave=Object.keys(localStorage).some(key=>key.startsWith('plunk_')&&
+      !['plunk_firstLaunchPending','plunk_firstLaunchDraft','plunk_clientIdentity','plunk_firstLaunchComplete'].includes(key));
+    fresh=localStorage.getItem('plunk_firstLaunchComplete')===null&&(pending||!hasSave);
+    if(fresh)localStorage.setItem('plunk_firstLaunchPending','true');
+  }catch(e){fresh=false;}
+  window.__plunkFirstRun=fresh;
+  if(fresh)document.documentElement.setAttribute('data-plunk-onboarding','');
+})();
 </script>
+<style id="plunk-v122-first-run-early">
+html[data-plunk-onboarding],html[data-plunk-onboarding] body{background:#fff!important;color:#111!important}
+html[data-plunk-onboarding] body>#app,html[data-plunk-onboarding] body>#plunkWinnerReveal,
+html[data-plunk-onboarding] body>canvas{visibility:hidden!important}
+</style>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="icon" type="image/png" href="icon.png">
-<title>|</title>
+<title>twelvecubes</title>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
 :root{
@@ -1945,6 +1956,32 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
 
 </head>
 <body>
+
+<style id="plunk-v122-first-run-style">
+#plunkFirstLaunch{position:fixed;inset:0;z-index:2147483647;background:#fff!important;color:#111!important;font:16px/1.4 Arial,sans-serif;overflow:auto;visibility:visible!important;display:block!important}
+#plunkFirstLaunch[hidden]{display:none!important}
+#plunkFirstLaunch *{box-sizing:border-box}
+#plunkFirstLaunch .inner{width:min(480px,calc(100% - 32px));margin:60px auto}
+#plunkFirstLaunch h1{font:bold 24px Arial,sans-serif;color:#111;margin:0 0 18px}
+#plunkFirstLaunch p{margin:8px 0;color:#111}
+#plunkFirstLaunch label{display:block;margin:12px 0 5px}
+#plunkFirstLaunch input,#plunkFirstLaunch button{font:16px Arial,sans-serif;padding:7px 9px;color:#111;background:#fff;border:1px solid #555;border-radius:0}
+#plunkFirstLaunch input{width:100%}
+#plunkFirstLaunch button{cursor:pointer;margin:7px 7px 7px 0}
+#plunkFirstLaunch button:disabled{color:#777;cursor:default}
+#plunkFirstLaunch section[hidden]{display:none!important}
+#plunkFirstLaunch .error{color:#a00;min-height:22px}
+#plunkFirstLaunch .avatar{width:90px;height:90px;margin:12px auto;border:2px solid #111;border-radius:50%}
+#plunkFirstLaunch .crate{border:1px solid #777;padding:8px;margin:9px 0}
+</style>
+<div id="plunkFirstLaunch" hidden role="dialog" aria-modal="true">
+<div class="inner">
+<section data-step="password"><h1>Password</h1><form id="plunkPasswordForm"><label for="plunkPass">Password</label><input id="plunkPass" type="password" autocomplete="off" required><button type="submit">Submit</button><p class="error" id="plunkPassError" role="alert"></p></form></section>
+<section data-step="username" hidden><h1>Type Username</h1><form id="plunkNameForm"><label for="plunkName">Username</label><input id="plunkName" maxlength="14" required><button type="submit">Continue</button><p class="error" id="plunkNameError" role="alert"></p></form></section>
+<section data-step="avatar" hidden><h1>Make Avatar</h1><p>Randomize or choose your colors.</p><div id="plunkAvatarPreview" class="avatar"></div><button id="plunkRandomAvatar" type="button">Randomize</button><label for="plunkPrimary">Primary</label><input id="plunkPrimary" type="color" value="#4b89dc"><label for="plunkSecondary">Secondary</label><input id="plunkSecondary" type="color" value="#ffc46b"><button id="plunkAvatarNext" type="button">Continue</button></section>
+<section data-step="crates" hidden><h1>Super Crates</h1><p>Open one of each: Dash Effects, Trail, and Hit Effect.</p><p>Rare 1/2 · Epic 1/3 · Legendary 1/9 · Mythic 1/20 · remainder Uncommon</p><div id="plunkSuperCrates"></div><button id="plunkStartGame" type="button" disabled>Start Game</button></section>
+</div></div>
+
 <div id="app">
 <canvas id="gameCanvas"></canvas>
 
@@ -20810,51 +20847,6 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
 })();
 </script>
 
-
-<style id="plunk-v121-first-launch-style">
-#plunkFirstLaunch{position:fixed;inset:0;z-index:2147483647;background:#fff;color:#111;font:16px/1.4 Arial,sans-serif;overflow:auto}
-#plunkFirstLaunch[hidden]{display:none!important}
-#plunkFirstLaunch *{box-sizing:border-box}
-#plunkFirstLaunch .plunk-start-inner{width:min(480px,calc(100% - 32px));margin:60px auto;padding:0}
-#plunkFirstLaunch h1{font:bold 24px Arial,sans-serif;margin:0 0 18px;color:#111}
-#plunkFirstLaunch p{margin:8px 0;color:#111}
-#plunkFirstLaunch label{display:block;margin:12px 0 5px}
-#plunkFirstLaunch input,#plunkFirstLaunch button{font:16px Arial,sans-serif;padding:7px 9px;color:#111;background:#fff;border:1px solid #555;border-radius:0}
-#plunkFirstLaunch input{width:100%}
-#plunkFirstLaunch button{cursor:pointer;margin:7px 7px 7px 0}
-#plunkFirstLaunch button:disabled{color:#777;cursor:default}
-#plunkFirstLaunch .plunk-start-step[hidden]{display:none!important}
-#plunkFirstLaunch .plunk-start-error{color:#a00;min-height:22px}
-#plunkFirstLaunch .plunk-start-avatar{display:block;width:94px;height:94px;border:2px solid #222;border-radius:50%;margin:14px auto 22px}
-#plunkFirstLaunch .plunk-start-crates{display:grid;gap:8px;margin:12px 0}
-#plunkFirstLaunch .plunk-start-crate{border:1px solid #777;padding:9px}
-</style>
-<div id="plunkFirstLaunch" hidden aria-modal="true" role="dialog">
-  <div class="plunk-start-inner">
-    <section class="plunk-start-step" data-step="password"><h1>Password</h1><form id="plunkStartPasswordForm"><label for="plunkStartPassword">Password</label><input id="plunkStartPassword" type="password" autocomplete="off" required><button type="submit">Submit</button><p class="plunk-start-error" id="plunkStartPasswordError" role="alert"></p></form></section>
-    <section class="plunk-start-step" data-step="username" hidden><h1>Type Username</h1><form id="plunkStartUsernameForm"><label for="plunkStartUsername">Username</label><input id="plunkStartUsername" maxlength="14" required><button type="submit">Continue</button><p class="plunk-start-error" id="plunkStartUsernameError" role="alert"></p></form></section>
-    <section class="plunk-start-step" data-step="avatar" hidden><h1>Make Avatar</h1><p>Randomize your appearance, or set colors below.</p><div class="plunk-start-avatar" id="plunkStartAvatarPreview"></div><button id="plunkStartRandom" type="button">Randomize</button><label for="plunkStartPrimary">Primary color</label><input type="color" id="plunkStartPrimary" value="#4b89dc"><label for="plunkStartSecondary">Secondary color</label><input type="color" id="plunkStartSecondary" value="#ffc46b"><button id="plunkStartAvatarNext" type="button">Continue</button></section>
-    <section class="plunk-start-step" data-step="crates" hidden><h1>Super Crates</h1><p>Open one Dash, one Trail, and one Hit Effect Super Crate.</p><p>Odds per crate: Rare 1/2, Epic 1/3, Legendary 1/9, Mythic 1/20; remaining chance Uncommon.</p><div class="plunk-start-crates" id="plunkStartCrates"></div><button id="plunkStartFinish" type="button" disabled>Start Game</button></section>
-  </div>
-</div>
-
-
-<script id="plunk-v121-gyro-range">
-(() => {
-  'use strict';
-  if(typeof Game==='undefined')return;
-  const prior=Game.weaponSpec?.bind(Game);
-  if(!prior)return;
-  Game.weaponSpec=function(p){
-    const spec=prior(p);
-    const id=typeof validWeapon==='function'?validWeapon(p?.weapon||'sword'):p?.weapon;
-    if(id==='gyroblade'&&spec&&Number.isFinite(Number(spec.projectileRange)))
-      spec.projectileRange=Math.max(0,Number(spec.projectileRange)*0.75);
-    return spec;
-  };
-})();
-</script>
-
 </body>
 
 <style id="weapon-selector-character-preview-primary-style-v1">
@@ -26887,6 +26879,47 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
     }
     ctx.restore();return result;
   };
+})();
+</script>
+
+
+<script id="plunk-v122-first-run-runtime">
+(() => {
+  'use strict';
+  const root=document.getElementById('plunkFirstLaunch');
+  if(!root)return;
+  if(!window.__plunkFirstRun){root.remove();return;}
+  root.hidden=false;
+  const draft=Storage.get('firstLaunchDraft',{});
+  const state={name:'',cust:draft.cust||null,opened:{dash:!!draft.opened?.dash,trail:!!draft.opened?.trail,hit:!!draft.opened?.hit}};
+  const $=id=>document.getElementById(id);
+  const clone=o=>JSON.parse(JSON.stringify(o));
+  const show=step=>{root.querySelectorAll('section[data-step]').forEach(section=>section.hidden=section.dataset.step!==step);root.querySelector(`section[data-step="${step}"] input`)?.focus();};
+  const defaults=()=>({name:state.name,hue:200,hue2:40,saturation:80,saturation2:60,brightness:60,brightness2:60,gradientPattern:'radial-out',eyes:'classic',mouth:'smile',brows:'none',outline:'none',dashEffect:'basic',trailEffect:'none',hitEffect:'impactSpark'});
+  const hex=(h,s,v)=>{const f=n=>{const k=(n+h/60)%6;return Math.round(v/100*(1-s/100*Math.max(0,Math.min(k,4-k,1)))*255).toString(16).padStart(2,'0')};return '#'+f(5)+f(3)+f(1)};
+  const hsv=hex=>{const r=parseInt(hex.slice(1,3),16)/255,g=parseInt(hex.slice(3,5),16)/255,b=parseInt(hex.slice(5,7),16)/255,hi=Math.max(r,g,b),lo=Math.min(r,g,b),d=hi-lo;let h=0;if(d){if(hi===r)h=((g-b)/d)%6;else if(hi===g)h=(b-r)/d+2;else h=(r-g)/d+4;h=(h*60+360)%360}return {hue:Math.round(h),saturation:Math.round(hi?d/hi*100:0),brightness:Math.round(hi*100)}};
+  const avatar=()=>{$('plunkAvatarPreview').style.background=`linear-gradient(135deg,${$('plunkPrimary').value} 0 52%,${$('plunkSecondary').value} 52% 100%)`};
+  $('plunkPasswordForm').addEventListener('submit',e=>{e.preventDefault();if($('plunkPass').value!=='cheeseburger'){$('plunkPassError').textContent='Incorrect password.';$('plunkPass').value='';return;}$('plunkPass').value='';show('username')});
+  $('plunkNameForm').addEventListener('submit',e=>{e.preventDefault();const name=$('plunkName').value.trim().slice(0,14);if(!name){$('plunkNameError').textContent='Enter a username.';return}state.name=name;state.cust=state.cust||defaults();state.cust.name=name;const c=state.cust;$('plunkPrimary').value=hex(c.hue,c.saturation,c.brightness);$('plunkSecondary').value=hex(c.hue2,c.saturation2,c.brightness2);show('avatar');avatar()});
+  $('plunkRandomAvatar').addEventListener('click',()=>{const c=state.cust;c.hue=Math.floor(Math.random()*360);c.hue2=Math.floor(Math.random()*360);c.saturation=50+Math.floor(Math.random()*51);c.saturation2=50+Math.floor(Math.random()*51);c.brightness=45+Math.floor(Math.random()*41);c.brightness2=45+Math.floor(Math.random()*41);c.gradientPattern=['radial-out','radial-in','linear','spiral','split'][Math.floor(Math.random()*5)];c.eyes=['classic','round','sleepy','angry'][Math.floor(Math.random()*4)];c.mouth=['smile','flat','grin'][Math.floor(Math.random()*3)];$('plunkPrimary').value=hex(c.hue,c.saturation,c.brightness);$('plunkSecondary').value=hex(c.hue2,c.saturation2,c.brightness2);avatar()});
+  $('plunkPrimary').addEventListener('input',avatar);$('plunkSecondary').addEventListener('input',avatar);
+  $('plunkAvatarNext').addEventListener('click',()=>{if(!state.cust)return;const p=hsv($('plunkPrimary').value),q=hsv($('plunkSecondary').value);Object.assign(state.cust,p,{hue2:q.hue,saturation2:q.saturation,brightness2:q.brightness});Storage.set('firstLaunchDraft',{cust:state.cust,opened:state.opened});show('crates');buildCrates()});
+  const odds=[['rare',1/2],['epic',1/3],['legendary',1/9],['mythic',1/20]];
+  const rollRarity=()=>{const n=Math.random();let t=0;for(const [rarity,chance] of odds){t+=chance;if(n<t)return rarity}return 'uncommon'};
+  const catalogs={dash:SphereBoxes.effects,trail:SphereBoxes.trailEffects,hit:SphereBoxes.hitEffects};
+  const buildCrates=()=>{const host=$('plunkSuperCrates');host.replaceChildren();for(const [kind,title] of [['dash','Dash Effects'],['trail','Trail'],['hit','Hit Effect']]){const row=document.createElement('div');row.className='crate';const label=document.createElement('strong');label.textContent=title+' Super Crate';const button=document.createElement('button');button.type='button';button.textContent='Open';button.disabled=state.opened[kind];const result=document.createElement('p');result.setAttribute('aria-live','polite');if(state.opened[kind])result.textContent='Already opened';button.addEventListener('click',()=>{if(state.opened[kind])return;const rarity=rollRarity();const available=Object.entries(catalogs[kind]||{}).filter(([id,e])=>id!=='none'&&e?.rarity===rarity);if(!available.length){result.textContent='No effect available for this roll. Retry.';return}const [id,effect]=available[Math.floor(Math.random()*available.length)];state.opened[kind]=true;button.disabled=true;SphereBoxes.addEffect(id);result.textContent=rarity.toUpperCase()+': '+effect.name;if(kind==='dash'){state.cust.dashEffect=id;SphereBoxes.equip(id)}else if(kind==='trail'){state.cust.trailEffect=id;SphereBoxes.equipTrail(id)}else{state.cust.hitEffect=id;SphereBoxes.equipHit(id)}Storage.set('firstLaunchDraft',{cust:state.cust,opened:state.opened});$('plunkStartGame').disabled=!Object.values(state.opened).every(Boolean)});row.append(label,document.createElement('br'),button,result);host.appendChild(row)}};
+  $('plunkStartGame').addEventListener('click',()=>{if(!Object.values(state.opened).every(Boolean)||!state.cust)return;Storage.set('customization',state.cust);Storage.set('customizationSlots',[clone(state.cust),null,null]);Storage.set('activeCustomizationSlot',0);Game.myName=state.name;const c=$('custName');if(c)c.value=state.name;const me=Game.players?.[Game.myId];if(me){me.name=state.name;me.cust=clone(state.cust)}Game.characterSpriteCache?.clear();Storage.set('firstLaunchComplete',true);try{localStorage.removeItem('plunk_firstLaunchPending');localStorage.removeItem('plunk_firstLaunchDraft')}catch(e){}document.documentElement.removeAttribute('data-plunk-onboarding');root.remove();if(typeof UI!=='undefined'&&Game.state==='menu')UI.goto('main')});
+  show('password');
+})();
+</script>
+
+
+<script id="plunk-v122-gyro-range">
+(() => {
+  'use strict';
+  if(typeof Game==='undefined')return;
+  const prior=Game.weaponSpec?.bind(Game);if(!prior)return;
+  Game.weaponSpec=function(p){const spec=prior(p);const id=typeof validWeapon==='function'?validWeapon(p?.weapon||'sword'):p?.weapon;if(id==='gyroblade'&&spec&&Number.isFinite(Number(spec.projectileRange)))spec.projectileRange=Math.max(0,Number(spec.projectileRange)*.75);return spec};
 })();
 </script>
 
